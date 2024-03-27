@@ -1,0 +1,46 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+pool:
+  name: Default
+stages:
+- stage: Build
+  jobs:
+    - job: firstjob
+      steps:
+      - script: echo Build First Job
+    - job: SecondJob
+      steps:
+      - script: echo Build Second Job
+- stage: DevDeploy
+  variables:
+    environment: Dev
+  dependsOn: Build
+  jobs:
+    - job: DevFist
+      steps:
+      - script: echo $(environment)DeployJob
+    - job: DevSeccond
+      steps:
+      - script: echo Dev Second Job
+- stage: QADeploy
+  variables:
+     environment: 
+  dependsOn: Build
+  jobs:
+    - job: QAJob
+      steps:
+      - script: echo $(environment)QADeploy
+- stage: ProdDeploy
+  dependsOn:
+  - DevDeploy
+  - QADeploy
+  jobs:
+    - job: ProductionsJob
+      steps:
+      - script: echo $(environment)ProdDeploy
