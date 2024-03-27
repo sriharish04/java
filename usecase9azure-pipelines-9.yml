@@ -1,0 +1,43 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+pool:
+  name: Default
+stages:
+- stage: Build
+  jobs:
+    - job: firstjob
+      steps:
+      - script: echo Build First Job
+      - script: echo $(pipelineLevelVariable)
+      - script: echo $(Build.BuildNumber)
+      - script: echo $(Build.BuildId)
+      - script: echo $(Build.SourceBranchName)
+      - script: echo $(Build.SourcesDirectory)
+      - script: echo $(System.DefaultWorkingDirectory)
+      - script: ls -R  $(System.DefaultWorkingDirectory)
+      - script: echo $(System.DefaultWorkingDirectory)
+      - script: echo $(Build.ArtifactStagingDirectory)
+      - script: java -version
+      - script: node --version
+      - script: python --version
+      - script: mvn -version
+      - script: ls -R $(Build.ArtifactStagingDirectory)
+      - task: CopyFiles@2
+        inputs:
+          SourceFolder: '$(System.DefaultWorkingDirectory)'
+          Contents: |
+            **/*.yml
+            **/*.java
+          TargetFolder: '$(Build.ArtifactStagingDirectory)'
+      - script: ls -R $(Build.ArtifactStagingDirectory)
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+          ArtifactName: 'drop'
+          publishLocation: 'Container'
